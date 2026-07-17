@@ -76,6 +76,21 @@ curl "http://localhost:8000/api/cases/123e4567-..."
 - `storage/cases.json` - Case metadata and results
 - `uploads/` - Uploaded documents
 
+## Configuration
+
+Environment variables (see also [`config.py`](./config.py)):
+
+| Variable | Default | Description |
+|---|---|---|
+| `ALLOWED_ORIGINS` | `http://localhost:3000` | Comma-separated CORS origins |
+| `STORAGE_DIR` | `backend/storage` | Case JSON directory |
+| `UPLOADS_DIR` | `backend/uploads` | Uploaded files directory |
+| `OLLAMA_BASE_URL` | `http://localhost:11434/v1` | Ollama API endpoint |
+| `OLLAMA_MODEL` | `qwen2.5:3b` | Model name |
+| `PORT` | `8000` | Server port (8080 on Fly.io) |
+
+For Fly.io deployment, see [DEPLOY_FLY.md](../DEPLOY_FLY.md) in the repo root.
+
 ## Current Limitations
 - Storage is file-based JSON (`storage/cases.json`) instead of a production DB
 - Background follow-up scheduling is in-process (replace with a durable job queue for real deployments)

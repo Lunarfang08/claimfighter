@@ -1,0 +1,39 @@
+# Backend image: Ollama + FastAPI analysis pipeline
+FROM ollama/ollama:latest
+
+USER root
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    python3-pip \
+    python3-venv \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Pipeline package + backend API
+COPY pyproject.toml main.py ./
+COPY schemas/ schemas/
+COPY pipeline/ pipeline/
+COPY data/samples/ data/samples/
+COPY backend/ backend/
+
+RUN pip3 install --no-cache-dir --break-system-packages -e . \
+    && pip3 install --no-cache-dir --break-system-packages -r backend/requirements.txt
+
+ENV PYTHONPATH=/app \
+    PYTHONUNBUFFERED=1 \
+    STORAGE_DIR=/data/storage \
+    UPLOADS_DIR=/data/uploads \
+    OLLAMA_BASE_URL=http://127.0.0.1:11434/v1 \
+    OLLAMA_MODEL=qwen2.5:3b \
+    OLLAMA_MODELS=/data/ollama/models
+
+RUN chmod +x /app/backend/start.sh
+
+EXPOSE 8080
+
+# Override Ollama image default entrypoint
+ENTRYPOINT []
+CMD ["/app/backend/start.sh"]

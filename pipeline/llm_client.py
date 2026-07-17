@@ -7,6 +7,7 @@ This wrapper handles:
 """
 
 import json
+import os
 import re
 from typing import TypeVar, Type
 
@@ -24,10 +25,12 @@ class OllamaClient:
     
     def __init__(
         self,
-        base_url: str = "http://localhost:11434/v1",
-        model: str = "qwen2.5:3b",
+        base_url: str | None = None,
+        model: str | None = None,
         timeout: float = 120.0,
     ):
+        base_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
+        model = model or os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
         self.client = OpenAI(
             base_url=base_url,
             api_key="ollama",  # Ollama doesn't need real API key

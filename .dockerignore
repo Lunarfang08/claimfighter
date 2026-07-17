@@ -1,0 +1,38 @@
+# Git
+.git
+.gitignore
+
+# Python
+.venv
+venv
+__pycache__
+*.py[cod]
+.pytest_cache
+.coverage
+htmlcov
+*.egg-info
+dist
+build
+
+# Node / Next.js
+frontend/node_modules
+frontend/.next
+frontend/out
+
+# Local data & secrets
+.env
+.env.*
+!.env.example
+backend/storage/cases.json
+backend/uploads
+keyyyyy
+
+# IDE & OS
+.vscode
+.idea
+.DS_Store
+*.log
+
+# Docs not needed in image
+*.md
+!README.md

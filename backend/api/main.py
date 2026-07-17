@@ -4,6 +4,7 @@ Provides REST API endpoints for the frontend to interact with the medical claim 
 """
 
 import logging
+import sys
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -16,6 +17,20 @@ from typing import List, Optional, Any, Dict
 from pydantic import BaseModel
 from threading import Timer
 
+_backend_dir = Path(__file__).parent.parent
+if str(_backend_dir) not in sys.path:
+    sys.path.insert(0, str(_backend_dir))
+
+from config import (
+    ALLOWED_ORIGINS,
+    CASES_FILE,
+    OLLAMA_BASE_URL,
+    OLLAMA_MODEL,
+    PORT,
+    STORAGE_DIR,
+    UPLOADS_DIR,
+)
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -25,19 +40,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS middleware for Next.js frontend
+# CORS middleware — origins from ALLOWED_ORIGINS env var
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js default port
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Storage paths
-STORAGE_DIR = Path(__file__).parent.parent / "storage"
-UPLOADS_DIR = Path(__file__).parent.parent / "uploads"
-CASES_FILE = STORAGE_DIR / "cases.json"
 
 # Ensure directories exist
 STORAGE_DIR.mkdir(exist_ok=True)
@@ -191,7 +201,7 @@ async def process_case(case_id: str):
         save_cases(cases)
         
         # Step 2: Initialize LLM client
-        llm = OllamaClient(model="qwen2.5:3b")
+        llm = OllamaClient(base_url=OLLAMA_BASE_URL, model=OLLAMA_MODEL)
         
         case["processing_steps"].append({
             "step": "initialize_llm",
@@ -750,4 +760,4 @@ async def resolve_case(case_id: str, payload: ResolveCaseRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=PORT)

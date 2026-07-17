@@ -1,0 +1,33 @@
+# fly.toml config file for frontend deployment.
+# Deploy from repo root: fly deploy -c fly.frontend.toml
+#
+# Set NEXT_PUBLIC_API_URL to your backend Fly URL before first deploy:
+#   fly deploy -c fly.frontend.toml --build-arg NEXT_PUBLIC_API_URL=https://medical-insu-api.fly.dev
+
+app = 'medical-insu-web'
+primary_region = 'iad'
+
+[build]
+  dockerfile = 'Dockerfile.frontend'
+  [build.args]
+    NEXT_PUBLIC_API_URL = 'https://medical-insu-api.fly.dev'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '30s'
+    method = 'GET'
+    path = '/'
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

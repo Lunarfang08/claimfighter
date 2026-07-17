@@ -1,120 +1,264 @@
-# Medical Claim Fighter - Phase 1
+# Medical Claim Fighter
 
-AI-powered medical bill and insurance claim appeal assistant.
+AI-powered assistant for analyzing medical bills, EOBs, and insurance denial letters — with deterministic billing-error detection, legal-backed findings, and a full appeal letter workflow.
 
-## What This Does (Phase 1)
+Upload a document, get a structured risk report in seconds, review an editable appeal letter, and track the case through approval, sending, and insurer follow-up.
 
-Takes a medical bill, EOB (Explanation of Benefits), or denial letter and:
-1. Extracts structured information (patient, codes, amounts, denial reasons)
-2. Runs deterministic rule-based checks for billing errors and legal violations
-3. Generates a risk report with findings, confidence levels, and recommended actions
+> **Portfolio / demo project.** Not intended for production use with real patient data without proper HIPAA compliance, authentication, and a BAA with your cloud provider.
 
-**Phase 1 Scope:** Static pipeline only. No database, no web UI, no LangGraph yet.
+---
 
-## Architecture Highlights
+## Features
 
-- **Local LLM:** Uses Ollama (qwen2.5:3b) via OpenAI-compatible API instead of cloud APIs
-- **Deterministic Rule Engine:** Billing error detection is pure Python logic, NOT LLM guesswork
-- **Structured Output:** Every LLM call returns validated Pydantic models with retry-on-failure
-- **Real Legal Logic:** Implements actual No Surprises Act balance billing rules and NCCI unbundling checks
+### Document analysis
+- Upload **TXT, PDF, PNG, or JPG** files (up to 10 MB)
+- Automatic document classification (EOB, denial letter, itemized bill)
+- LLM-powered field extraction: patient info, CPT/ICD codes, amounts, denial reasons
+- Deterministic rule engine for billing errors — no LLM guesswork on factual checks
+
+### Risk report
+- Findings with confidence levels, evidence, legal citations, and recommended actions
+- Supports common denial types: medical necessity (CO-50), code mismatch (CO-16), out-of-network (CO-96), balance billing (No Surprises Act)
+- Extracted fields view and processing step timeline
+
+### Appeal letter workflow
+- Auto-generated appeal letter draft from risk report findings
+- Editable letter interface with version history (draft → approved → sent)
+- Supporting document checklist tailored to finding types
+- Insurer response upload with Round 2 draft generation
+- Follow-up deadline tracking after a letter is marked sent
+
+### Case management
+- Web dashboard to list, view, and delete cases
+- Real-time processing status polling
+- File-based persistence (JSON + local uploads) for local development
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Frontend — Next.js 16 (App Router) + TypeScript                │
+│  Upload UI · Case dashboard · Risk report · Appeal letter editor│
+└────────────────────────────┬────────────────────────────────────┘
+                             │ REST (axios + React Query)
+┌────────────────────────────▼────────────────────────────────────┐
+│  Backend — FastAPI (Python)                                     │
+│  Upload · Process · Cases · Appeal letter lifecycle             │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+┌────────────────────────────▼────────────────────────────────────┐
+│  Analysis Pipeline (Python)                                     │
+│  document_loader → Ollama LLM → rule_engine → risk_report       │
+│  → appeal_letter_builder                                        │
+└────────────────────────────┬────────────────────────────────────┘
+                             │
+              ┌──────────────┴──────────────┐
+              │                             │
+     Ollama (local LLM)              File storage
+     qwen2.5:3b                      cases.json + uploads/
+```
+
+**Design principle:** The LLM handles narrow extraction/classification tasks. All billing-error detection runs as pure Python logic in the rule engine so results are testable, explainable, and non-hallucinated.
+
+See [`insurance-appeal-agent-architecture.md`](./insurance-appeal-agent-architecture.md) for the full long-term plan (PostgreSQL, RAG, LangGraph agent loop).
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS, shadcn/ui, React Query |
+| Backend | FastAPI, Uvicorn, Pydantic v2 |
+| LLM | [Ollama](https://ollama.com) (`qwen2.5:3b`) via OpenAI-compatible API |
+| Document parsing | pdfplumber, PyMuPDF, Pillow |
+| Storage | Local JSON file + filesystem uploads (dev/demo) |
+| Testing | pytest |
+
+---
 
 ## Prerequisites
 
-1. **Python 3.11+** (uses modern type hints)
-2. **Ollama** with `qwen2.5:3b` model
+- **Python 3.11+**
+- **Node.js 20+** and npm
+- **Ollama** with the `qwen2.5:3b` model
 
-### Installing Ollama & Model
+### Install Ollama and pull the model
 
 ```bash
-# Install Ollama (if not already installed)
-# macOS:
+# macOS
 brew install ollama
 
-# Start Ollama service
+# Start the Ollama server (keep this running)
 ollama serve
 
-# Pull the model (in another terminal)
+# In another terminal, pull the model
 ollama pull qwen2.5:3b
 ```
 
 Verify Ollama is running:
+
 ```bash
 curl http://localhost:11434/v1/models
 ```
 
-## Installation
+---
+
+## Getting Started
+
+### 1. Clone and set up Python
 
 ```bash
-# Clone/navigate to project directory
+git clone <your-repo-url>
 cd medical_insu
 
-# Create virtual environment and install dependencies
 python3.11 -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+source .venv/bin/activate   # Windows: .venv\Scripts\activate
 
-# Install dependencies
-pip install -e .
+# Install pipeline + schemas package
+pip install -e ".[dev]"
 
-# Or with uv (faster):
-uv pip install -e .
+# Install backend API dependencies
+pip install -r backend/requirements.txt
 ```
 
-## Usage
-
-Run the pipeline on a sample document:
+### 2. Start the backend
 
 ```bash
-python main.py data/samples/denial_medical_necessity_emergency.txt
+cd backend
+uvicorn api.main:app --reload --port 8000
 ```
 
-Try all three test cases:
+- API: http://localhost:8000  
+- Interactive docs: http://localhost:8000/docs
+
+### 3. Start the frontend
+
+In a new terminal:
 
 ```bash
-# Case 1: Emergency service denied as "not medically necessary"
+cd frontend
+npm install
+
+# Optional — defaults to http://localhost:8000 if unset
+echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
+
+npm run dev
+```
+
+- App: http://localhost:3000
+
+### 4. Try it
+
+1. Open http://localhost:3000 and click **Analyze a Document**
+2. Upload a sample file from `data/samples/`
+3. Click **Start Analysis** and wait for processing to finish
+4. Review the risk report and appeal letter on the case detail page
+
+---
+
+## CLI Usage
+
+You can also run the analysis pipeline directly from the command line (no web UI):
+
+```bash
+# Activate venv first
+source .venv/bin/activate
+
+# Emergency service denied as "not medically necessary"
 python main.py data/samples/denial_medical_necessity_emergency.txt
 
-# Case 2: Diagnosis code mismatch (x-ray for soft tissue injury)
+# Diagnosis code mismatch
 python main.py data/samples/denial_code_mismatch.txt
 
-# Case 3: Out-of-network provider at in-network facility
+# Out-of-network provider at in-network facility
 python main.py data/samples/denial_out_of_network.txt
 ```
+
+---
 
 ## Project Structure
 
 ```
 medical_insu/
-├── main.py                    # Phase 1 pipeline entry point
-├── schemas/
-│   ├── extracted_fields.py    # Pydantic model for extracted data
-│   └── risk_report.py         # Pydantic model for analysis output
+├── frontend/                    # Next.js web app
+│   ├── app/                     # Pages (home, upload, cases)
+│   ├── components/              # UI, upload, report, appeal letter
+│   ├── hooks/                   # React Query hooks
+│   └── lib/                     # API client and types
+├── backend/
+│   ├── api/main.py              # FastAPI application
+│   ├── storage/cases.json       # Case metadata (gitignored in prod)
+│   └── uploads/                 # Uploaded documents
 ├── pipeline/
-│   ├── llm_client.py          # Ollama wrapper with structured output
-│   └── rule_engine.py         # Deterministic billing error checks
-├── data/samples/              # Synthetic test documents
-│   ├── denial_medical_necessity_emergency.txt
-│   ├── denial_code_mismatch.txt
-│   └── denial_out_of_network.txt
-├── tests/                     # Unit tests
-│   └── test_rule_engine.py
-└── README.md
+│   ├── document_loader.py       # TXT / PDF / image text extraction
+│   ├── llm_client.py            # Ollama wrapper with structured JSON output
+│   ├── rule_engine.py           # Deterministic billing error checks
+│   └── appeal_letter_builder.py # Appeal letter draft generation
+├── schemas/                     # Pydantic models (extracted fields, risk report, letters)
+├── data/samples/                # Synthetic test documents
+├── tests/                       # Unit tests (rule engine)
+├── main.py                      # CLI pipeline entry point
+└── insurance-appeal-agent-architecture.md
 ```
 
-## Rule Engine Checks (Phase 1)
+---
 
-All deterministic, no LLM involved:
+## API Overview
 
-1. **Duplicate Charges:** Same CPT code billed multiple times on same date
-2. **Unbundling Violations:** Separately billing services that should be bundled (NCCI rules)
-3. **Balance Billing Violations:** No Surprises Act checks for emergency services and OON providers at in-network facilities
-4. **Medical Necessity Denial Weakness:** CO-50 denials on emergency services (high overturn rate)
-5. **Out-of-Network Miscoding:** Flags potential incorrect network status processing
+Full endpoint documentation is available at http://localhost:8000/docs when the backend is running.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/` | Health check |
+| `POST` | `/api/upload` | Upload a document, create a case |
+| `POST` | `/api/process/{case_id}` | Run the analysis pipeline |
+| `GET` | `/api/cases` | List all cases |
+| `GET` | `/api/cases/{case_id}` | Get case details + risk report |
+| `GET` | `/api/cases/{case_id}/status` | Poll processing status |
+| `GET` | `/api/cases/{case_id}/appeal-letter` | Get appeal letter versions |
+| `POST` | `/api/cases/{case_id}/appeal-letter/approve` | Approve a letter version |
+| `POST` | `/api/cases/{case_id}/appeal-letter/send` | Mark letter as sent |
+| `POST` | `/api/cases/{case_id}/insurer-response` | Upload insurer reply, generate Round 2 draft |
+| `POST` | `/api/cases/{case_id}/resolve` | Mark case resolved |
+| `DELETE` | `/api/cases/{case_id}` | Delete a case |
+
+Example with curl:
+
+```bash
+# Upload
+curl -X POST "http://localhost:8000/api/upload" \
+  -F "file=@data/samples/denial_medical_necessity_emergency.txt"
+
+# Process (use case_id from upload response)
+curl -X POST "http://localhost:8000/api/process/<case_id>"
+
+# Get results
+curl "http://localhost:8000/api/cases/<case_id>"
+```
+
+---
+
+## Rule Engine Checks
+
+All checks are deterministic Python — no LLM involved:
+
+| Check | What it detects |
+|---|---|
+| Duplicate charges | Same CPT code billed multiple times on the same date |
+| Unbundling violations | Separately billed services that should be bundled (NCCI rules) |
+| Balance billing (NSA) | No Surprises Act violations for emergency / OON-at-in-network-facility |
+| Medical necessity weakness | CO-50 denials on emergency services (high overturn rate) |
+| Out-of-network miscoding | Potential incorrect network status processing |
+
+---
 
 ## Testing
 
-Run unit tests:
-
 ```bash
+source .venv/bin/activate
 pytest tests/ -v
 ```
 
@@ -124,73 +268,79 @@ With coverage:
 pytest tests/ --cov=pipeline --cov-report=term-missing
 ```
 
-## What's NOT in Phase 1
+---
 
-- ❌ PDF/image upload (uses plain text files)
-- ❌ OCR (pdfplumber/PyMuPDF integration comes later)
-- ❌ RAG lookups (policy/law knowledge base)
-- ❌ Letter drafting
-- ❌ Database persistence
-- ❌ LangGraph state machine
-- ❌ Web UI
-- ❌ Follow-up loop
+## Deployment (Fly.io)
 
-These come in Phases 2-6 per the architecture doc.
+This repo includes Fly.io configs for a **two-app deployment**:
 
-## Sample Output
+| App | Config | What it runs |
+|---|---|---|
+| `medical-insu-api` | `fly.backend.toml` | FastAPI + Ollama + persistent volume |
+| `medical-insu-web` | `fly.frontend.toml` | Next.js standalone server |
 
-```json
-{
-  "case_summary": "Denial Letter from Blue Cross Blue Shield for Jane M. Doe. Total patient responsibility: $2100. 1 potential issue(s) detected.",
-  "findings": [
-    {
-      "error_type": "medical_necessity_dispute",
-      "confidence": "high",
-      "description": "Medical necessity denial for emergency service. Emergency services must be covered based on 'prudent layperson' standard...",
-      "evidence": [
-        "Denial code: CO-50 (Non-covered service / Not medically necessary)",
-        "Emergency service codes detected",
-        "Prudent layperson standard applies"
-      ],
-      "legal_citation": "EMTALA § 1867(e)(1)(B) & ACA § 2719A: Emergency services covered based on presenting symptoms...",
-      "estimated_impact": "2100.00",
-      "recommendation": "File appeal immediately. Cite prudent layperson standard..."
-    }
-  ],
-  "total_disputed_amount": "2100.00",
-  "total_billed_amount": "3500.00",
-  "appeal_likelihood": "high",
-  "next_steps": [
-    "File appeal immediately. Cite prudent layperson standard. Attach: ER admission notes..."
-  ]
-}
+**Quick start** (from repo root):
+
+```bash
+fly auth login
+fly apps create medical-insu-api
+fly volumes create medical_insu_data --region iad --size 3 -a medical-insu-api
+fly deploy -c fly.backend.toml
+
+# Update NEXT_PUBLIC_API_URL in fly.frontend.toml, then:
+fly apps create medical-insu-web
+fly deploy -c fly.frontend.toml
+
+fly secrets set ALLOWED_ORIGINS="https://medical-insu-web.fly.dev,http://localhost:3000" -a medical-insu-api
 ```
 
-## Design Decisions (for Interviews)
+Full step-by-step guide: **[DEPLOY_FLY.md](./DEPLOY_FLY.md)**
 
-### Why Ollama instead of Claude?
-- **Portfolio constraint:** Demonstrates ability to work with resource-constrained local models
-- **Cost:** Zero inference cost during development
-- **Privacy:** No PHI sent to external APIs (HIPAA consideration)
-- **Trade-off:** Less reliable than Claude, hence the heavy defensive parsing and narrow single-purpose LLM calls
+### Environment variables
 
-### Why NOT give the LLM "tool use" autonomy?
-- 8B models are unreliable at tool selection and multi-step planning
-- Better to run ALL checks unconditionally in Python and let the LLM only do narrow extraction/classification tasks
-- The "agentic" behavior comes from the state machine (LangGraph in Phase 4), not from the LLM deciding which functions to call
+| Variable | Service | Description |
+|---|---|---|
+| `ALLOWED_ORIGINS` | Backend | Comma-separated CORS origins |
+| `NEXT_PUBLIC_API_URL` | Frontend (build) | Backend URL, e.g. `https://medical-insu-api.fly.dev` |
+| `OLLAMA_MODEL` | Backend | Default: `qwen2.5:3b` |
 
-### Why separate rule engine from LLM?
-- **Testability:** Pure Python functions have deterministic, unit-testable behavior
-- **Explainability:** Can cite exact line of code that detected an error
-- **Correctness:** Billing rules are factual, checkable logic — don't hallucinate them
-- **Performance:** No LLM latency for simple pattern matching
+The backend uses a **4 GB Fly machine** and a **3 GB volume** for case data, uploads, and cached Ollama models.
 
-## Next Steps (Phase 2)
+> **Note:** File-based JSON storage is fine for demos. For production, migrate to PostgreSQL + object storage (see roadmap).
 
-1. Add letter drafting (LLM generates appeal letter from risk report)
-2. Add PDF text extraction (pdfplumber for digital PDFs)
-3. Improve LLM prompts based on real-world testing
+---
+
+## Roadmap
+
+| Phase | Status | Scope |
+|---|---|---|
+| **Phase 1** — Static analysis pipeline | ✅ Done | Upload, extraction, rule engine, risk report |
+| **Phase 2** — Letter drafting + documents | ✅ Mostly done | Appeal letters, PDF/image upload, editable UI |
+| **Phase 3** — Persistence | 🔲 Planned | PostgreSQL, case timeline, search |
+| **Phase 4** — Follow-up loop | 🔲 Planned | LangGraph state machine, durable job queue, Round N automation |
+| **Phase 5+** — RAG + auth | 🔲 Planned | Policy knowledge base, user accounts, HIPAA-ready infra |
+
+---
+
+## Design Decisions
+
+**Why Ollama instead of a cloud LLM?**
+Zero inference cost during development, no PHI sent to external APIs, and demonstrates working with resource-constrained local models. Trade-off: less reliable than Claude/GPT, which is why LLM calls are kept narrow (classify + extract only).
+
+**Why separate the rule engine from the LLM?**
+Billing rules are factual and checkable. Pure Python functions are unit-testable, explainable ("this line of code flagged it"), and cannot hallucinate legal violations.
+
+**Why deterministic appeal letters instead of LLM-generated?**
+Letter content is auditable against the same findings shown in the UI. Legal citations in the letter come directly from the rule engine output, not a second model pass that could drift.
+
+---
+
+## Disclaimer
+
+This project uses **synthetic sample data** for demonstration. It is **not HIPAA-compliant** as shipped (no auth, no encryption guarantees, no BAA). Do not upload real patient health information unless you have implemented proper security controls and legal agreements.
+
+---
 
 ## License
 
-MIT (portfolio project — not for production medical use without proper HIPAA compliance)
+MIT — portfolio project, not for production medical use without proper compliance review.
