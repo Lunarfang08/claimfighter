@@ -31,9 +31,11 @@ class OllamaClient:
     ):
         base_url = base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")
         model = model or os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
+        # Ollama ignores the key; Groq/OpenAI-compatible APIs need OPENAI_API_KEY
+        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("GROQ_API_KEY") or "ollama"
         self.client = OpenAI(
             base_url=base_url,
-            api_key="ollama",  # Ollama doesn't need real API key
+            api_key=api_key,
             timeout=timeout,
         )
         self.model = model
