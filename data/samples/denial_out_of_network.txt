@@ -1,0 +1,94 @@
+UNITED HEALTHCARE
+EXPLANATION OF BENEFITS
+
+Subscriber: Maria L. Garcia
+Member ID: 700123456789
+Plan Type: Choice Plus
+
+Service Date: January 22, 2024
+Provider: DR. SARAH CHEN, MD - ANESTHESIOLOGY
+Provider NPI: 9876543210
+Facility: MEMORIAL SURGICAL CENTER (In-Network)
+Claim #: UHC-2024-0122-45678
+
+=====================================================
+BENEFIT DETERMINATION
+=====================================================
+
+Service Description                  CPT Code    Billed      Allowed     Paid    You Owe
+-----------------------------------------------------------------------------------------
+Anesthesia for Shoulder Surgery      01630       $1,850.00   $925.00     $0.00   $1,850.00
+Anesthesia Time Units (8 units)      —           included    included    $0.00   included
+-----------------------------------------------------------------------------------------
+TOTAL                                            $1,850.00   $925.00     $0.00   $1,850.00
+
+DIAGNOSIS CODE:
+  M75.121 - Complete rotator cuff tear of right shoulder, not specified as traumatic
+
+PROCEDURE CODE:
+  29827 - Arthroscopy, shoulder, surgical; with rotator cuff repair
+
+=====================================================
+PROCESSING NOTES
+=====================================================
+
+** OUT-OF-NETWORK PROVIDER **
+
+This claim was processed as OUT-OF-NETWORK.
+
+Explanation:
+- The surgical facility (Memorial Surgical Center) is IN your network
+- However, the anesthesiologist (Dr. Sarah Chen) is OUT of your network
+- Out-of-network benefits apply different cost-sharing
+
+Out-of-Network Deductible: $3,000 (You have met: $0)
+Out-of-Network Coinsurance: 40% (after deductible)
+
+Your Responsibility:
+  Deductible: $925.00
+  Balance Billing: $925.00 (difference between billed and allowed)
+  Total: $1,850.00
+
+=====================================================
+IMPORTANT NOTICE - NO SURPRISES ACT
+=====================================================
+
+Federal law may protect you from certain surprise medical bills in this situation.
+
+If you received this service:
+1. At an in-network facility, AND
+2. From an out-of-network provider, AND  
+3. Did NOT sign an advance consent/waiver form
+
+You may be protected from balance billing under the No Surprises Act.
+
+For more information or to file a complaint:
+- Visit: www.cms.gov/nosurprises
+- Call: 1-800-985-3059
+
+=====================================================
+APPEAL RIGHTS
+=====================================================
+
+If you believe:
+- The provider should have been processed as in-network, OR
+- This service is protected under the No Surprises Act
+
+You may file an appeal within 180 days.
+
+Submit appeals to:
+United Healthcare Appeals
+PO Box 30432
+Salt Lake City, UT 84130
+
+Online: www.uhc.com/appeals
+Phone: 1-866-414-1959
+
+Required Information:
+- Member ID and claim number
+- Explanation of disagreement
+- Supporting documentation
+
+This is your Explanation of Benefits, not a bill. You may receive a separate bill from the provider.
+
+EOB Date: February 5, 2024

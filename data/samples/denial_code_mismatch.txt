@@ -1,0 +1,69 @@
+AETNA HEALTH INSURANCE
+EXPLANATION OF BENEFITS
+
+Member Name: Robert J. Smith
+Member ID: W123456789
+Plan: Gold PPO
+
+Date of Service: February 10, 2024
+Provider: ORTHOPEDIC SPECIALISTS OF TEXAS (In-Network)
+Provider NPI: 1234567890
+Claim Number: 20240210-987654
+
+=====================================================
+CLAIM SUMMARY
+=====================================================
+
+Procedure                            CPT Code    Billed      Allowed     Plan Paid   You Owe
+--------------------------------------------------------------------------------------------
+Office Visit - Established Patient   99214       $275.00     $180.00     $144.00     $36.00
+Knee X-Ray, 3 Views                  73562       $385.00     $220.00     $0.00       $220.00
+--------------------------------------------------------------------------------------------
+TOTALS                                           $660.00     $400.00     $144.00     $256.00
+
+DIAGNOSIS CODES SUBMITTED:
+  M25.561 - Pain in right knee
+  S83.511A - Sprain of anterior cruciate ligament of right knee, initial encounter
+
+=====================================================
+CLAIM PROCESSING NOTES
+=====================================================
+
+Line 1 (CPT 99214): APPROVED - Processed at in-network rate. Your copay: $36.00
+
+Line 2 (CPT 73562): DENIED
+  Denial Code: CO-11 - Diagnosis inconsistent with procedure
+  
+  Explanation: The diagnosis code submitted (S83.511A - ACL sprain, initial encounter) does not support the medical necessity for a knee x-ray. X-rays are not the appropriate imaging modality for soft tissue injuries like ligament sprains. MRI would be the standard of care for ACL evaluation.
+  
+  Per our clinical guidelines, x-rays of the knee are covered for:
+  - Suspected fracture
+  - Degenerative joint disease/osteoarthritis
+  - Post-traumatic evaluation (when bone injury is suspected)
+  
+  ACL injuries require MRI for diagnosis, not x-ray.
+
+Amount You Owe: $256.00 ($36 copay + $220 denied service)
+
+=====================================================
+APPEAL INFORMATION
+=====================================================
+
+You have 180 days from the date of this EOB to file an appeal if you believe this determination is incorrect.
+
+To appeal: Submit a written request with supporting medical documentation to:
+Aetna Appeals Unit
+PO Box 14463
+Lexington, KY 40512-4463
+
+Or file online at: www.aetna.com/appeals
+
+Please include:
+- This EOB
+- Your member ID
+- Claim number
+- Medical records supporting the service
+
+Questions? Call Member Services: 1-800-US-AETNA
+
+Date of Notice: February 24, 2024

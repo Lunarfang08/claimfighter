@@ -1,0 +1,60 @@
+BLUE CROSS BLUE SHIELD OF CALIFORNIA
+EXPLANATION OF BENEFITS (EOB)
+
+Member: Jane M. Doe
+Member ID: MEM987654321
+Group Number: GRP12345
+
+Date of Service: March 15, 2024
+Provider: CITY GENERAL HOSPITAL - EMERGENCY DEPARTMENT
+Provider Tax ID: 94-1234567
+Claim Number: CLM2024031500987
+
+=====================================================
+CLAIM DETAILS
+=====================================================
+
+Service Description                  CPT Code    Billed      Allowed     Paid    Patient Resp.
+-------------------------------------------------------------------------------------------------
+Emergency Dept Visit - Level 5       99285       $850.00     $625.00     $0.00   $625.00
+CT Head/Brain without Contrast       70450       $2,650.00   $1,475.00   $0.00   $1,475.00
+-------------------------------------------------------------------------------------------------
+TOTALS                                           $3,500.00   $2,100.00   $0.00   $2,100.00
+
+DIAGNOSIS CODES:
+  R51.9  - Headache, unspecified
+  G43.909 - Migraine, unspecified, not intractable, without status migrainosus
+
+=====================================================
+DENIAL EXPLANATION
+=====================================================
+
+Your claim has been DENIED for the following reason(s):
+
+Denial Code: CO-50
+Reason: The services rendered are not medically necessary according to our clinical guidelines.
+
+Our medical review determined that a CT scan of the head was not medically necessary for the treatment of headache/migraine symptoms. Conservative management (medication, observation) should have been attempted first before ordering advanced imaging.
+
+Amount You Owe: $2,100.00
+
+=====================================================
+YOUR APPEAL RIGHTS
+=====================================================
+
+If you disagree with this decision, you have the right to appeal. You must file an appeal within 180 days of the date of this notice.
+
+To appeal, send a written request to:
+Blue Cross Blue Shield Appeals Department
+PO Box 12345
+Sacramento, CA 95814
+
+Include: Your member ID, claim number, and explanation of why you disagree with the denial.
+
+For questions, call Member Services: 1-800-555-BCBS
+
+=====================================================
+
+This is not a bill. This EOB is for informational purposes. The provider may bill you for the denied amount unless you successfully appeal.
+
+Date of Notice: March 28, 2024
