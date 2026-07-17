@@ -1,6 +1,7 @@
 # Sevalla / Nixpacks build config for the FastAPI backend
 [phases.setup]
-nixPkgs = ["python311", "gcc"]
+nixPkgs = ["python311", "gcc", "tesseract", "leptonica"]
+aptPkgs = ["tesseract-ocr", "tesseract-ocr-eng"]
 
 [phases.install]
 cmds = [
