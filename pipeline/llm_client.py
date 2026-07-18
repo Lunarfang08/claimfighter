@@ -9,10 +9,10 @@ This wrapper handles:
 import json
 import os
 import re
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Optional
 
 from openai import OpenAI
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, field_validator
 
 from schemas import ExtractedFields, DocumentType
 
@@ -204,8 +204,8 @@ class ExtractedFieldsResponse(BaseModel):
     provider_name: str | None = None
     service_date: str | None = None  # LLM outputs as string, we'll parse
     service_date_end: str | None = None
-    cpt_codes: list[str] = []
-    icd_codes: list[str] = []
+    cpt_codes: Optional[list[str]] = None
+    icd_codes: Optional[list[str]] = None
     billed_amount: str | None = None  # LLM outputs as string
     allowed_amount: str | None = None
     paid_amount: str | None = None
@@ -214,3 +214,11 @@ class ExtractedFieldsResponse(BaseModel):
     denial_reason_text: str | None = None
     in_network: bool | None = None
     raw_denial_context: str | None = None
+
+    @field_validator("cpt_codes", "icd_codes", mode="before")
+    @classmethod
+    def coerce_null_to_empty_list(cls, v):
+        """LLM sometimes returns null for list fields — treat as empty list."""
+        if v is None:
+            return []
+        return v
