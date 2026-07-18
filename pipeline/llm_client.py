@@ -222,3 +222,14 @@ class ExtractedFieldsResponse(BaseModel):
         if v is None:
             return []
         return v
+
+    @field_validator(
+        "billed_amount", "allowed_amount", "paid_amount", "patient_responsibility",
+        mode="before"
+    )
+    @classmethod
+    def coerce_null_string_to_none(cls, v):
+        """LLM sometimes returns the string 'null' instead of actual null — convert to None."""
+        if v == "null" or v == "":
+            return None
+        return v

@@ -15,7 +15,6 @@ _BACKEND_DIR = Path(__file__).parent
 # Persistent storage (use /data/* on Fly.io with a mounted volume)
 STORAGE_DIR = Path(os.getenv("STORAGE_DIR", _BACKEND_DIR / "storage"))
 UPLOADS_DIR = Path(os.getenv("UPLOADS_DIR", _BACKEND_DIR / "uploads"))
-CASES_FILE = STORAGE_DIR / "cases.json"
 
 # CORS — comma-separated list, e.g. "http://localhost:3000,https://my-app.fly.dev"
 ALLOWED_ORIGINS = _split_origins(

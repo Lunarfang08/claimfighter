@@ -10,3 +10,17 @@ pymupdf>=1.23.0
 pillow>=10.0.0
 python-dateutil>=2.8.2
 pytesseract>=0.3.10
+
+# Phase 3 — Database persistence
+asyncpg>=0.29.0
+sqlalchemy[asyncio]>=2.0.0
+alembic>=1.13.0
+psycopg2-binary>=2.9.9
+aiosqlite>=0.20.0  # SQLite async driver (local dev fallback)
+
+# Phase 4 — LangGraph agentic state machine
+langgraph>=0.2.0
+langchain-core>=0.3.0
+
+# PDF export for appeal letters
+reportlab>=4.2.0

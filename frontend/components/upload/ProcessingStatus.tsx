@@ -26,30 +26,37 @@ const STEP_LABELS: Record<string, string> = {
   error: 'Processing Failed',
 };
 
+const CORE_PIPELINE_STEPS = [
+  'upload', 'load_text', 'initialize_llm', 'classify_document',
+  'extract_fields', 'rule_engine', 'risk_report', 'draft_appeal_letter',
+];
+
 export function ProcessingStatus({ steps, currentStatus }: ProcessingStatusProps) {
-  const knownStepKeys = new Set(Object.keys(STEP_LABELS));
-  const completedSteps = steps.filter((s) => s.status === 'completed' && knownStepKeys.has(s.step)).length;
-  const totalSteps = Object.keys(STEP_LABELS).length - 1; // Exclude 'error'
-  const progress = (completedSteps / totalSteps) * 100;
+  const coreSet = new Set(CORE_PIPELINE_STEPS);
+  const completedSteps = steps.filter((s) => s.status === 'completed' && coreSet.has(s.step)).length;
+  // Once the pipeline finishes, show a full bar regardless of which steps ran
+  const progress = ['uploaded', 'processing'].includes(currentStatus)
+    ? (completedSteps / CORE_PIPELINE_STEPS.length) * 100
+    : 100;
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {currentStatus === 'processing' && (
+          {currentStatus === 'processing' ? (
             <Loader2 className="h-5 w-5 animate-spin text-primary" />
-          )}
-          {currentStatus === 'completed' && (
+          ) : currentStatus === 'failed' ? (
+            <XCircle className="h-5 w-5 text-destructive" />
+          ) : currentStatus === 'uploaded' ? (
+            <Circle className="h-5 w-5 text-muted-foreground" />
+          ) : (
             <CheckCircle2 className="h-5 w-5 text-green-600" />
           )}
-          {currentStatus === 'failed' && (
-            <XCircle className="h-5 w-5 text-destructive" />
-          )}
           <span>
-            {currentStatus === 'processing' && 'Processing Document...'}
-            {currentStatus === 'completed' && 'Processing Complete'}
-            {currentStatus === 'failed' && 'Processing Failed'}
-            {currentStatus === 'uploaded' && 'Ready to Process'}
+            {currentStatus === 'processing' ? 'Processing Document...'
+              : currentStatus === 'failed' ? 'Processing Failed'
+              : currentStatus === 'uploaded' ? 'Ready to Process'
+              : 'Processing Complete'}
           </span>
         </CardTitle>
       </CardHeader>

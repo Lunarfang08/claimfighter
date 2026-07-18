@@ -54,3 +54,6 @@ data/private/
 *.pdf
 *.jpg
 *.png
+
+# Local SQLite database
+*.db

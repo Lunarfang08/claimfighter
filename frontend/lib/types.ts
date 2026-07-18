@@ -1,5 +1,5 @@
 /**
- * TypeScript type definitions matching the backend API responses
+ * TypeScript type definitions — Phases 1-4
  */
 
 export type CaseStatus =
@@ -14,9 +14,17 @@ export type CaseStatus =
   | 'escalated'
   | 'resolved';
 
-export type ConfidenceLevel = 'high' | 'medium' | 'low';
+export type ConfidenceLevel = 'high' | 'medium' | 'low' | 'speculative';
 
-export type DocumentType = 'eob' | 'denial_letter' | 'itemized_bill';
+export type DocumentType = 'eob' | 'denial_letter' | 'itemized_bill' | 'unknown';
+
+export type LetterVersionStatus = 'draft' | 'approved' | 'sent' | 'escalated';
+
+export type ResolutionOutcome = 'won' | 'partial' | 'lost';
+
+// ────────────────────────────────────────────────────────────────────────────
+// Processing
+// ────────────────────────────────────────────────────────────────────────────
 
 export interface ProcessingStep {
   step: string;
@@ -25,29 +33,40 @@ export interface ProcessingStep {
   details?: string;
 }
 
+// ────────────────────────────────────────────────────────────────────────────
+// Extracted Fields
+// ────────────────────────────────────────────────────────────────────────────
+
 export interface ExtractedFields {
   document_type: DocumentType;
   patient_name: string | null;
+  patient_id: string | null;
   insurer_name: string | null;
-  policy_number: string | null;
-  claim_number: string | null;
+  provider_name: string | null;
   service_date: string | null;
+  service_date_end: string | null;
   cpt_codes: string[];
   icd_codes: string[];
   billed_amount: string | null;
   allowed_amount: string | null;
+  paid_amount: string | null;
   patient_responsibility: string | null;
   denial_reason_code: string | null;
   denial_reason_text: string | null;
   in_network: boolean | null;
+  raw_denial_context: string | null;
 }
+
+// ────────────────────────────────────────────────────────────────────────────
+// Risk Report
+// ────────────────────────────────────────────────────────────────────────────
 
 export interface Finding {
   error_type: string;
   confidence: ConfidenceLevel;
   description: string;
   evidence: string[];
-  legal_citation: string;
+  legal_citation: string | null;
   estimated_impact: string | null;
   recommendation: string;
 }
@@ -61,7 +80,9 @@ export interface RiskReport {
   next_steps: string[];
 }
 
-export type LetterVersionStatus = 'draft' | 'approved' | 'sent' | 'escalated';
+// ────────────────────────────────────────────────────────────────────────────
+// Appeal Letters (Phase 2)
+// ────────────────────────────────────────────────────────────────────────────
 
 export interface AppealLetterVersion {
   version_id: string;
@@ -77,15 +98,48 @@ export interface AppealLetterVersion {
   sent_at?: string | null;
   escalated_at?: string | null;
   metadata: Record<string, unknown>;
+  pdf_path?: string | null;
 }
+
+// ────────────────────────────────────────────────────────────────────────────
+// Follow-up State (Phase 4)
+// ────────────────────────────────────────────────────────────────────────────
 
 export interface FollowUpState {
   round: number;
-  round_1_sent_at?: string;
-  round_1_response_deadline?: string;
+  agent_state: string;
+  round_1_sent_at?: string | null;
+  round_1_response_deadline?: string | null;
   round_1_response_received_at?: string | null;
+  round_1_response_excerpt?: string | null;
+  round_2_sent_at?: string | null;
+  round_2_response_deadline?: string | null;
+  round_2_response_received_at?: string | null;
   escalation_ready?: boolean;
-  [key: string]: unknown;
+  escalation_triggered_at?: string | null;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Timeline (Phase 3)
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface TimelineEvent {
+  id: number;
+  event_type: string;
+  title: string;
+  description: string | null;
+  occurred_at: string;
+  metadata: Record<string, unknown>;
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Case
+// ────────────────────────────────────────────────────────────────────────────
+
+export interface Resolution {
+  outcome: ResolutionOutcome;
+  notes: string | null;
+  resolved_at: string;
 }
 
 export interface Case {
@@ -96,14 +150,19 @@ export interface Case {
   status: CaseStatus;
   created_at: string;
   updated_at: string;
+  error?: string | null;
   extracted_fields: ExtractedFields | null;
   risk_report: RiskReport | null;
   processing_steps: ProcessingStep[];
-  error?: string;
   appeal_letter_versions?: AppealLetterVersion[];
-  current_appeal_letter_version_id?: string;
-  follow_up?: FollowUpState;
+  current_appeal_letter_version_id?: string | null;
+  follow_up?: FollowUpState | null;
+  resolution?: Resolution | null;
 }
+
+// ────────────────────────────────────────────────────────────────────────────
+// API Responses
+// ────────────────────────────────────────────────────────────────────────────
 
 export interface UploadResponse {
   case_id: string;
@@ -122,4 +181,18 @@ export interface ProcessResponse {
 export interface CasesListResponse {
   cases: Case[];
   total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AppealLetterResponse {
+  case_id: string;
+  current: AppealLetterVersion | null;
+  versions: AppealLetterVersion[];
+  follow_up: FollowUpState | null;
+}
+
+export interface TimelineResponse {
+  case_id: string;
+  events: TimelineEvent[];
 }

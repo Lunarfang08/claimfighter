@@ -1,8 +1,14 @@
 /**
- * React Query hooks for appeal letter workflow (Phase 2+).
+ * React Query hooks for appeal letter workflow — Phases 2 & 4
  */
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { approveAppealLetter, getAppealLetter, sendAppealLetter, uploadInsurerResponse } from '@/lib/api';
+import {
+  approveAppealLetter,
+  getAppealLetter,
+  sendAppealLetter,
+  uploadInsurerResponse,
+} from '@/lib/api';
 
 export function useAppealLetter(caseId: string | undefined) {
   return useQuery({
@@ -43,11 +49,13 @@ export function useSendAppealLetter() {
       caseId,
       version_id,
       send_method,
+      response_deadline_days,
     }: {
       caseId: string;
       version_id: string;
       send_method?: string;
-    }) => sendAppealLetter(caseId, { version_id, send_method }),
+      response_deadline_days?: number;
+    }) => sendAppealLetter(caseId, { version_id, send_method, response_deadline_days }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['case', variables.caseId] });
       queryClient.invalidateQueries({ queryKey: ['appeal-letter', variables.caseId] });
@@ -58,13 +66,12 @@ export function useSendAppealLetter() {
 export function useUploadInsurerResponse() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ caseId, file }: { caseId: string; file: File }) => {
-      return uploadInsurerResponse(caseId, file);
-    },
+    mutationFn: async ({ caseId, file }: { caseId: string; file: File }) =>
+      uploadInsurerResponse(caseId, file),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['case', variables.caseId] });
       queryClient.invalidateQueries({ queryKey: ['appeal-letter', variables.caseId] });
+      queryClient.invalidateQueries({ queryKey: ['case-timeline', variables.caseId] });
     },
   });
 }
-

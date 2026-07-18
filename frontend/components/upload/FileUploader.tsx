@@ -57,35 +57,39 @@ export function FileUploader({ onFileSelect, isUploading = false }: FileUploader
       <Card
         {...getRootProps()}
         className={`
-          border-2 border-dashed p-12 text-center cursor-pointer transition-colors
-          ${isDragActive ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'}
-          ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:border-primary hover:bg-primary/5'}
+          border-2 border-dashed p-10 sm:p-14 text-center cursor-pointer transition-all duration-200 rounded-xl
+          ${isDragActive ? 'border-primary bg-primary/5 scale-[1.01] shadow-lg shadow-primary/10' : 'border-muted-foreground/25 bg-muted/20'}
+          ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:border-primary/60 hover:bg-primary/5'}
         `}
       >
         <input {...getInputProps()} />
-        
+
         <div className="flex flex-col items-center gap-4">
           {isDragActive ? (
             <>
-              <Upload className="h-12 w-12 text-primary" />
+              <div className="p-4 rounded-2xl bg-primary/10">
+                <Upload className="h-10 w-10 text-primary" />
+              </div>
               <p className="text-lg font-medium">Drop the file here...</p>
             </>
           ) : (
             <>
-              <FileText className="h-12 w-12 text-muted-foreground" />
+              <div className="p-4 rounded-2xl bg-primary/10">
+                <FileText className="h-10 w-10 text-primary" />
+              </div>
               <div>
-                <p className="text-lg font-medium mb-2">
-                  {isUploading ? 'Uploading...' : 'Drop your document here, or click to select'}
+                <p className="text-lg font-medium mb-1.5">
+                  {isUploading ? 'Uploading...' : 'Drop your document here, or click to browse'}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Supports: EOB, Denial Letter, Itemized Bill
+                  EOB · Denial Letter · Itemized Bill
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
-                  Accepted formats: TXT, PDF, PNG, JPG (max 10MB)
+                  PDF, TXT, PNG, or JPG — up to 10MB
                 </p>
               </div>
               {!isUploading && (
-                <Button type="button" variant="outline" className="mt-2">
+                <Button type="button" variant="outline" className="mt-1 bg-background">
                   Select File
                 </Button>
               )}

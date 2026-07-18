@@ -32,9 +32,9 @@ export function ExtractedFieldsView({ fields }: ExtractedFieldsViewProps) {
             </Badge>
           } />
           <FieldRow label="Patient Name"     value={fields.patient_name} />
+          <FieldRow label="Patient ID"       value={fields.patient_id} />
           <FieldRow label="Insurer Name"     value={fields.insurer_name} />
-          <FieldRow label="Policy Number"    value={fields.policy_number} />
-          <FieldRow label="Claim Number"     value={fields.claim_number} />
+          <FieldRow label="Provider Name"    value={fields.provider_name} />
           <FieldRow label="Date of Service"  value={fields.service_date} />
         </CardContent>
       </Card>

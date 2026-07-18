@@ -1,107 +1,231 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Upload, Shield, FileSearch, Gavel,
-  ArrowRight, CheckCircle2
+  Upload, Shield, FileSearch, Gavel, ArrowRight, FileText,
+  ScanLine, PenLine, Clock, CheckCircle2, Scale, FileDown,
 } from 'lucide-react';
 
 const FEATURES = [
   {
-    icon: Upload,
-    title: 'Upload Any Document',
-    description: 'Submit EOBs, denial letters, or itemized bills in TXT format (PDF and image support coming in Phase 2).',
+    icon: ScanLine,
+    title: 'Any Document Format',
+    description:
+      'Upload EOBs, denial letters, or itemized bills as PDF, image, or text. Built-in OCR reads scanned documents automatically.',
   },
   {
     icon: FileSearch,
     title: 'AI-Powered Extraction',
-    description: 'Automatically extracts patient info, CPT/ICD codes, denial reasons, and dollar amounts.',
+    description:
+      'Extracts patient info, CPT/ICD codes, denial reasons, and dollar amounts into a structured, reviewable record.',
   },
   {
     icon: Shield,
-    title: 'Rule-Based Error Detection',
-    description: 'Deterministic checks for duplicate charges, unbundling violations, and No Surprises Act violations.',
+    title: 'Deterministic Error Detection',
+    description:
+      'Rule-based checks catch duplicate charges, unbundling violations, and No Surprises Act balance-billing errors — no hallucinations.',
   },
   {
     icon: Gavel,
     title: 'Legal-Backed Findings',
-    description: 'Every finding cites specific laws (EMTALA, No Surprises Act, NCCI edits) with actionable recommendations.',
+    description:
+      'Every finding cites specific laws — EMTALA, the No Surprises Act, NCCI edits — with a concrete recommended action.',
+  },
+  {
+    icon: PenLine,
+    title: 'AI-Drafted Appeal Letters',
+    description:
+      'Generates a formal appeal letter with citations and a supporting-document checklist. Edit, approve, and download as PDF.',
+  },
+  {
+    icon: Clock,
+    title: 'Automated Follow-up Loop',
+    description:
+      'Tracks response deadlines, drafts Round 2 rebuttals from the insurer\u2019s reply, and prepares escalation packets when deadlines pass.',
+  },
+];
+
+const WORKFLOW = [
+  {
+    step: '01',
+    icon: Upload,
+    title: 'Upload',
+    description: 'Drop in your denial letter, EOB, or bill. OCR and AI extraction run in seconds.',
+  },
+  {
+    step: '02',
+    icon: FileSearch,
+    title: 'Analyze',
+    description: 'Get a risk report: billing errors, legal violations, disputed dollars, and appeal likelihood.',
+  },
+  {
+    step: '03',
+    icon: FileDown,
+    title: 'Appeal',
+    description: 'Review the AI-drafted appeal letter, make edits, approve it, and send it as a polished PDF.',
+  },
+  {
+    step: '04',
+    icon: Scale,
+    title: 'Follow Up',
+    description: 'The system tracks deadlines, drafts Round 2 responses, and escalates to regulators if needed.',
   },
 ];
 
 const DENIAL_TYPES = [
-  { code: 'CO-50', label: 'Medical Necessity', color: 'bg-red-100 text-red-800' },
-  { code: 'CO-16', label: 'Code Mismatch', color: 'bg-orange-100 text-orange-800' },
-  { code: 'CO-96', label: 'Out-of-Network', color: 'bg-yellow-100 text-yellow-800' },
-  { code: 'NSA',   label: 'Balance Billing', color: 'bg-blue-100 text-blue-800' },
+  { code: 'CO-50', label: 'Medical Necessity' },
+  { code: 'CO-16', label: 'Code Mismatch' },
+  { code: 'CO-96', label: 'Out-of-Network' },
+  { code: 'NSA', label: 'Balance Billing' },
+  { code: 'DUP', label: 'Duplicate Charges' },
+  { code: 'NCCI', label: 'Unbundling' },
+];
+
+const STATS = [
+  { value: '4', label: 'Analysis stages per case' },
+  { value: '6+', label: 'Error types detected' },
+  { value: '2', label: 'Appeal rounds automated' },
+  { value: '100%', label: 'Citations from real law' },
 ];
 
 export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero */}
-      <section className="bg-gradient-to-b from-primary/10 to-background py-20 px-4">
-        <div className="container max-w-4xl mx-auto text-center">
-          <Badge variant="outline" className="mb-4 text-sm">
-            Phase 1 — Static Analysis Pipeline
+      <section className="relative overflow-hidden border-b">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.07] via-transparent to-accent/40 pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-[0.4] pointer-events-none"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 1px 1px, oklch(0.5 0.17 255 / 8%) 1px, transparent 0)',
+            backgroundSize: '28px 28px',
+          }}
+        />
+        <div className="container max-w-5xl mx-auto text-center relative py-24 md:py-32 px-4">
+          <Badge
+            variant="outline"
+            className="mb-6 px-3 py-1 text-xs font-medium bg-background/80 backdrop-blur border-primary/30 text-primary"
+          >
+            <CheckCircle2 className="h-3 w-3 mr-1.5" />
+            End-to-end appeal pipeline — analysis to escalation
           </Badge>
-          <h1 className="text-5xl font-bold tracking-tight mb-6">
-            Fight Your Medical Bills with AI
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6 text-balance">
+            Fight Your Medical Bills
+            <span className="block bg-gradient-to-r from-primary to-chart-2 bg-clip-text text-transparent pb-1">
+              with an AI Advocate
+            </span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            Upload a denial letter, EOB, or itemized bill. Get a detailed risk report
-            with legal citations, error findings, and step-by-step appeal guidance — in seconds.
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+            Upload a denial letter, EOB, or itemized bill. Get a risk report with legal citations,
+            an editable appeal letter, and automated deadline tracking — in seconds.
           </p>
-          <div className="flex gap-4 justify-center flex-wrap">
+          <div className="flex gap-3 justify-center flex-wrap">
             <Link href="/upload">
-              <Button size="lg" className="text-base px-8">
+              <Button size="lg" className="text-base px-8 h-12 shadow-lg shadow-primary/20">
                 Analyze a Document
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <Link href="/cases">
-              <Button size="lg" variant="outline" className="text-base px-8">
-                View All Cases
+              <Button size="lg" variant="outline" className="text-base px-8 h-12 bg-background/80 backdrop-blur">
+                Open Dashboard
               </Button>
             </Link>
           </div>
-        </div>
-      </section>
 
-      {/* Supported denial types */}
-      <section className="py-10 border-b">
-        <div className="container max-w-4xl mx-auto px-4 text-center">
-          <p className="text-sm text-muted-foreground mb-4 font-medium uppercase tracking-wider">
-            Denial types we handle
-          </p>
-          <div className="flex gap-3 justify-center flex-wrap">
-            {DENIAL_TYPES.map((d) => (
-              <Badge key={d.code} className={`text-sm px-3 py-1 ${d.color}`}>
-                {d.code} — {d.label}
-              </Badge>
+          {/* Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 max-w-3xl mx-auto">
+            {STATS.map((s) => (
+              <div key={s.label} className="text-center">
+                <div className="text-3xl font-bold text-primary">{s.value}</div>
+                <div className="text-xs text-muted-foreground mt-1">{s.label}</div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 px-4">
+      {/* Denial types marquee strip */}
+      <section className="py-8 border-b bg-muted/40">
+        <div className="container max-w-5xl mx-auto px-4 text-center">
+          <p className="text-xs text-muted-foreground mb-4 font-semibold uppercase tracking-widest">
+            Denial types we detect and dispute
+          </p>
+          <div className="flex gap-2.5 justify-center flex-wrap">
+            {DENIAL_TYPES.map((d) => (
+              <span
+                key={d.code}
+                className="inline-flex items-center gap-2 rounded-full border bg-background px-4 py-1.5 text-sm shadow-sm"
+              >
+                <span className="font-mono font-semibold text-primary text-xs">{d.code}</span>
+                <span className="text-muted-foreground">{d.label}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Workflow */}
+      <section className="py-20 md:py-24 px-4">
         <div className="container max-w-5xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">From denial to appeal in four steps</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              A complete case workflow — not just analysis. ClaimFighter stays on your case until it&apos;s resolved.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {WORKFLOW.map((w, i) => {
+              const Icon = w.icon;
+              return (
+                <div key={w.step} className="relative group">
+                  <Card className="h-full border-border/70 transition-all duration-200 group-hover:border-primary/40 group-hover:shadow-lg group-hover:shadow-primary/5 group-hover:-translate-y-0.5">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="text-3xl font-bold text-muted-foreground/20 font-mono">{w.step}</span>
+                      </div>
+                      <h3 className="font-semibold text-lg mb-1.5">{w.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{w.description}</p>
+                    </CardContent>
+                  </Card>
+                  {i < WORKFLOW.length - 1 && (
+                    <ArrowRight className="hidden lg:block absolute top-1/2 -right-4 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 z-10" />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="py-20 md:py-24 px-4 bg-muted/40 border-y">
+        <div className="container max-w-5xl mx-auto">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-bold mb-3">Built for real appeals</h2>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Deterministic rule checks keep findings auditable. AI makes the letters persuasive. You stay in control.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {FEATURES.map((f) => {
               const Icon = f.icon;
               return (
-                <Card key={f.title} className="hover:shadow-md transition-shadow">
-                  <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <Icon className="h-6 w-6 text-primary" />
+                <Card
+                  key={f.title}
+                  className="border-border/70 bg-card hover:shadow-md hover:border-primary/30 transition-all duration-200"
+                >
+                  <CardContent className="pt-6">
+                    <div className="p-2.5 rounded-xl bg-primary/10 text-primary w-fit mb-4">
+                      <Icon className="h-5 w-5" />
                     </div>
-                    <CardTitle className="text-lg">{f.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground">{f.description}</p>
+                    <h3 className="font-semibold mb-1.5">{f.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
                   </CardContent>
                 </Card>
               );
@@ -110,65 +234,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA / Roadmap */}
-      <section className="py-20 px-4 bg-muted/50">
-        <div className="container max-w-3xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-4">What&apos;s Coming Next</h2>
-          <p className="text-center text-muted-foreground mb-10">
-            Phase 1 is the foundation. Here&apos;s the full roadmap.
-          </p>
-          <div className="space-y-4">
-            {[
-              { phase: 'Phase 1', label: 'Static Analysis Pipeline', done: true,
-                items: ['Document upload & parsing', 'Field extraction via LLM', 'Rule-based error detection', 'Risk report generation'] },
-              { phase: 'Phase 2', label: 'Letter Drafting + PDF Support', done: false,
-                items: ['AI-generated appeal letters', 'PDF & image upload (OCR)', 'Editable letter interface'] },
-              { phase: 'Phase 3', label: 'Persistence & Case History', done: false,
-                items: ['PostgreSQL case storage', 'Full case timeline', 'Search and filtering'] },
-              { phase: 'Phase 4', label: 'Follow-up Loop (LangGraph)', done: false,
-                items: ['Agentic state machine', 'Deadline tracking', 'Round-2 appeal drafting'] },
-            ].map((p) => (
-              <Card key={p.phase} className={p.done ? 'border-green-300 bg-green-50' : ''}>
-                <CardContent className="pt-5 pb-4">
-                  <div className="flex items-start gap-3">
-                    {p.done ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                    ) : (
-                      <div className="h-5 w-5 rounded-full border-2 border-muted-foreground/30 mt-0.5 flex-shrink-0" />
-                    )}
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <Badge variant={p.done ? 'default' : 'outline'} className="text-xs">
-                          {p.phase}
-                        </Badge>
-                        <span className="font-semibold">{p.label}</span>
-                      </div>
-                      <ul className="text-sm text-muted-foreground space-y-0.5">
-                        {p.items.map((item) => (
-                          <li key={item}>• {item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Bottom CTA */}
-      <section className="py-16 px-4 text-center">
-        <h2 className="text-3xl font-bold mb-4">Ready to fight your claim?</h2>
-        <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-          Upload a sample denial letter and see your risk report in under 30 seconds.
-        </p>
-        <Link href="/upload">
-          <Button size="lg" className="text-base px-10">
-            Get Started Free
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
+      <section className="py-20 md:py-28 px-4 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-primary/[0.06] to-transparent pointer-events-none" />
+        <div className="relative">
+          <div className="inline-flex p-3 rounded-2xl bg-primary/10 text-primary mb-6">
+            <FileText className="h-7 w-7" />
+          </div>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to fight your claim?</h2>
+          <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+            Upload a denial letter and see your full risk report — findings, citations, and a drafted appeal — in under a minute.
+          </p>
+          <Link href="/upload">
+            <Button size="lg" className="text-base px-10 h-12 shadow-lg shadow-primary/20">
+              Get Started Free
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+        </div>
       </section>
     </div>
   );

@@ -32,6 +32,12 @@ const CONFIDENCE_CONFIG: Record<
     bgColor: 'bg-blue-50 border-blue-200',
     label: 'Low Confidence',
   },
+  speculative: {
+    icon: Info,
+    color: 'text-gray-500',
+    bgColor: 'bg-gray-50 border-gray-200',
+    label: 'Speculative',
+  },
 };
 
 export function FindingCard({ finding, index }: FindingCardProps) {
